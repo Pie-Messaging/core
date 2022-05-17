@@ -1,0 +1,195 @@
+syntax = "proto3";
+
+package core;
+
+option go_package = "pie/pb";
+
+message GetAddrReq {}
+
+message GetAddrRes {
+  repeated string addresses = 1;
+}
+
+message FindTrackerReq {
+  bytes id = 1;
+}
+
+message FindTrackerRes {
+  Status status = 1;
+  repeated Tracker candidates = 2;
+}
+
+message FindResourceReq {
+  bytes id = 1;
+  ResourceType type = 2;
+}
+
+message FindResourceRes {
+  Status status = 1;
+  Resource resource = 2;
+  repeated Tracker candidate_trackers = 3;
+}
+
+message PutResourceReq {
+  ResourceType type = 1;
+  Resource resource = 2;
+}
+
+message PutResourceRes {
+  Status status = 1;
+}
+
+message ClientCertReq {
+  bytes id = 1;
+  bytes cert_der = 2;
+  bytes server_cert_sign = 3;
+}
+
+message AddContactReq {
+  string token = 1;
+  User user = 2;
+}
+
+message AddContactRes {
+  Status status = 1;
+}
+
+message ApprovalContactAddingReq {
+}
+
+message ApprovalContactAddingRes {
+  Status status = 1;
+}
+
+message SendMessageReq {
+  Message message = 1;
+}
+
+message SendMessageRes {
+  Status status = 1;
+}
+
+message GetFileReq {
+  repeated bytes file_id_list = 1;
+}
+
+message GetFileRes {
+  Status status = 1;
+}
+
+message SendFileReq {
+  bytes message_id = 1;
+  int32 index = 2;
+  bytes file_id = 3;
+  string suffix = 4;
+  int64 size = 5;
+}
+
+message SendFileRes {
+  Status status = 1;
+}
+
+message FinishSendFileReq {
+  bytes file_id = 1;
+}
+
+message User {
+  bytes id = 1;
+  string name = 2;
+  string email = 3;
+  string bio = 4;
+  bytes avatar = 5;
+  bytes cert_der = 6;
+  repeated string addresses = 7;
+}
+
+message Tracker {
+  bytes id = 1;
+  repeated string addr = 2;
+}
+
+message Message {
+  bytes id = 1;
+  string content = 2;
+  repeated MessageMeta meta_list = 3;
+  repeated File files = 4;
+}
+
+message MessageMeta {
+  int32 start_offset = 1;
+  int32 end_offset = 2;
+  MessageMetaType type = 3;
+}
+
+message File {
+  bytes id = 1;
+  FileType type = 2;
+  string name = 3;
+  int64 size = 4;
+}
+
+message Resource {
+  oneof resource {
+    User user = 1;
+  }
+}
+
+enum ResourceType {
+  USER = 0;
+}
+
+enum MessageMetaType {
+  MARKDOWN = 0;
+  BOLD = 1;
+  ITALIC = 2;
+  UNDERLINE = 3;
+  STRIKE = 4;
+  CODE = 5;
+  LINK = 6;
+}
+
+enum FileType {
+  UNKNOWN = 0;
+  IMAGE = 1;
+  AUDIO = 2;
+  VIDEO = 3;
+  TEXT = 4;
+}
+
+enum Status {
+  OK = 0;
+
+  ALREADY_DONE = 1;
+  NOT_FOUND = 2;
+  USER_REJECTED = 3;
+
+  CERT_ERROR = 4;
+  TOO_MANY_REQUESTS = 5;
+
+  INTERNAL_ERROR = 6;
+}
+
+message NetMessage {
+  oneof body {
+    GetAddrReq get_addr_req = 1;
+    GetAddrRes get_addr_res = 2;
+    FindTrackerReq find_tracker_req = 3;
+    FindTrackerRes find_tracker_res = 4;
+    FindResourceReq find_resource_req = 5;
+    FindResourceRes find_resource_res = 6;
+    PutResourceReq put_resource_req = 7;
+    PutResourceRes put_resource_res = 8;
+    ClientCertReq client_cert_req = 9;
+    AddContactReq add_contact_req = 10;
+    AddContactRes add_contact_res = 11;
+    ApprovalContactAddingReq accept_contact_adding_req = 12;
+    ApprovalContactAddingRes accept_contact_adding_res = 13;
+    SendMessageReq send_message_req = 14;
+    SendMessageRes send_message_res = 15;
+    GetFileReq get_file_req = 16;
+    GetFileRes get_file_res = 17;
+    SendFileReq send_file_req = 18;
+    SendFileRes send_file_res = 19;
+    FinishSendFileReq finish_send_file_req = 20;
+  };
+}
